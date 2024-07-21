@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./UserTable.css";
 
-const UserTable = ({ users }) => {
+const UserTable = ({ users, sortBy }) => {
   const widthRatios = [0.3, 0.1, 0.1, 0.2, 0.3];
 
   if (widthRatios.reduce((acc, current) => acc + current, 0) !== 1) {
@@ -39,19 +39,48 @@ const UserTable = ({ users }) => {
     window.addEventListener("touchmove", mouseMoveHandler);
     window.addEventListener("touchend", mouseUpHandler);
   };
+
+  const sortByName = () => {sortBy("lastName")};
+  const sortByAge = () => {sortBy("age")};
+  const sortByGender = () => {sortBy("gender")};
+  const sortByAddress = () => {sortBy("address.city")}
+
+  const headers = [
+    {
+      name: "ФИО",
+      sortFunc: sortByName,
+    },
+    {
+      name: "Возраст",
+      sortFunc: sortByAge,
+    },
+    {
+      name: "Пол",
+      sortFunc: sortByGender,
+    },
+    {
+      name: "Номер телефона",
+    },
+    {
+      name: "Адрес",
+      sortFunc: sortByAddress,
+    },
+  ];
+
   return (
     <div className="table-container">
       <table className="table">
         <thead>
           <tr>
-            {["ФИО", "Возраст", "Пол", "Номер телефона", "Адрес"].map(
+            {headers.map(
               (header, index) => (
                 <th
                   className="table-column table-column__head"
                   key={index}
                   style={{ width: columnWidths[index] }}
                 >
-                  {header}
+                  {header.name}
+                  {header.sortFunc && (<button className="button-sortBy" onClick={header.sortFunc}>Sort</button>)}
                   <div
                     className="resizer"
                     onMouseDown={(e) => onResize(e, index)}

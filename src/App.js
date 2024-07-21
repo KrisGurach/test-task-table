@@ -94,6 +94,29 @@ const App = () => {
     }
   };
 
+  const [sortConditions, setSortConditions] = useState({});
+
+  const sortBy = (field) => {
+    const newType = sortConditions[field] === "asc" ? "desc" : "asc";
+
+    const getValue = (obj) =>
+      field.includes(".")
+        ? field.split(".").reduce((o, i) => o[i], obj)
+        : obj[field];
+
+    const sortedUsers = [...users].sort((a, b) => {
+      const valueA = getValue(a);
+      const valueB = getValue(b);
+
+      return newType === "asc"
+        ? valueA > valueB? 1 : -1 // Для сортировки по возрастанию
+        : valueA < valueB? 1 : -1; // Для сортировки по убыванию
+    });
+
+    setUsers(sortedUsers);
+    setSortConditions({ ...sortConditions, [field]: newType });
+  };
+
   return (
     <div>
       <h1>Таблица пользователей</h1>
@@ -104,7 +127,10 @@ const App = () => {
         onChange={handleSearch}
         disabled={isDisabled}
       />
-      <UserTable users={users} />
+      <UserTable 
+        users={users}
+        sortBy={sortBy}
+      />
     </div>
   );
 };
