@@ -11,7 +11,9 @@ const App = () => {
   }
 
   const [users, setUsers] = useState(usersToSet);
+  const [isDisabled, setIsDisabled] = useState(false);
   const hasFetchedData = useRef(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (hasFetchedData.current)
@@ -30,6 +32,12 @@ const App = () => {
 
     hasFetchedData.current = true;
   }, []);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }  
+  }, [isDisabled])
 
   // поиск юзеров по всем колонкам
   // ТЗ вынуждает выполнять большое кол-во параллельных api-запросов
@@ -69,15 +77,18 @@ const App = () => {
         setUsers(foundUsers);
       })
       .catch(console.error)
-      // .finally(() => {
-      //   setIsSearchProcessing(false);
-      // });
+      .finally(() => {
+        setIsDisabled(false);
+      });
   }
 
   const handleSearch = (event) => {
+    setIsDisabled(true);
+
     const value = event.target.value;
     if (!value) {
       setUsers(usersToSet);
+      setIsDisabled(false);
     } else {
       searchByColumns(value);
     }
@@ -87,9 +98,11 @@ const App = () => {
     <div>
       <h1>Таблица пользователей</h1>
       <input
+        ref={inputRef}
         type="text"
         placeholder="Поиск..."
         onChange={handleSearch}
+        disabled={isDisabled}
       />
       <UserTable users={users} />
     </div>
