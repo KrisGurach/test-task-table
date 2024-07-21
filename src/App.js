@@ -4,8 +4,13 @@ import UserTable from "./UserTable";
 import api from "./Api";
 
 const App = () => {
-  const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const allUsers = JSON.parse(localStorage.getItem("allUsers"));
+  let usersToSet = []
+  if (allUsers) {
+    usersToSet = allUsers;
+  }
+
+  const [users, setUsers] = useState(usersToSet);
   const hasFetchedData = useRef(false);
 
   useEffect(() => {
@@ -13,23 +18,70 @@ const App = () => {
       return;
 
     api.getUsers()
-      .then((x) => setUsers(x.users))
+      .then((x) => {
+        setUsers(x.users);
+
+        localStorage.setItem(
+          "allUsers",
+          JSON.stringify(x.users)
+        );
+      })
       .catch(console.error);
 
     hasFetchedData.current = true;
   }, []);
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
+  // поиск юзеров по всем колонкам
+  // ТЗ вынуждает выполнять большое кол-во параллельных api-запросов
+  // по-хорошему нужно 
+  // 1. либо реализовать поиск по кнопке,
+  // 2. либо доработать api,
+  // 3. либо выполнять фильтрацию на стороне frontend без api-запросов
 
-  // фильтрация по поиску
-  const filteredUsers = users.filter((user) =>
-    Object.values(user)
-      .join("")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const searchByColumns = (value) => {
+    const keys = [
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "phone",
+      "address.city",
+      "address.address"
+    ];
+
+    const promises = keys
+        .map((key) => api.findBy(key, value))
+        .map((result) => result
+          .then((data) => data)
+          .catch(console.error));
+
+    Promise.allSettled(promises)
+      .then((results) => {
+        const dataArr = results
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value);
+
+        const foundUsers = dataArr.reduce(
+          (acc, data) => acc.concat(data.users),
+          []
+        );
+
+        setUsers(foundUsers);
+      })
+      .catch(console.error)
+      // .finally(() => {
+      //   setIsSearchProcessing(false);
+      // });
+  }
+
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    if (!value) {
+      setUsers(usersToSet);
+    } else {
+      searchByColumns(value);
+    }
+  };
 
   return (
     <div>
@@ -37,10 +89,9 @@ const App = () => {
       <input
         type="text"
         placeholder="Поиск..."
-        value={searchTerm}
         onChange={handleSearch}
       />
-      <UserTable users={filteredUsers} />
+      <UserTable users={users} />
     </div>
   );
 };
