@@ -37,3 +37,21 @@
   width: 5px;
   z-index: 1;
 }
+
+.button-sort {
+  margin-left: 10px;
+  background-image: url(./sort-icon-down.png);
+  background-color: transparent;
+  background-size: cover; 
+  background-position: center; 
+  border: none; 
+  width: 20px; 
+  height: 15px; 
+  color: white; 
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button-sort-down {
+  transform: rotate(180deg);
+}

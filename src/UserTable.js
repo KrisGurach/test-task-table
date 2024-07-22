@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "./UserTable.css";
 
-const UserTable = ({ users, sortBy }) => {
-  const widthRatios = [0.3, 0.1, 0.1, 0.2, 0.3];
+const UserTable = ({ users, sortBy, isSortDown }) => {
+  const widthRatios = [0.25, 0.15, 0.1, 0.2, 0.3];
 
   if (widthRatios.reduce((acc, current) => acc + current, 0) !== 1) {
     throw new Error("Недопустимое соотношение ширин колонок");
@@ -80,7 +80,7 @@ const UserTable = ({ users, sortBy }) => {
                   style={{ width: columnWidths[index] }}
                 >
                   {header.name}
-                  {header.sortFunc && (<button className="button-sortBy" onClick={header.sortFunc}>Sort</button>)}
+                  {header.sortFunc && (<button className={`button-sort ${isSortDown ? "button-sort-down" : ""}`} onClick={header.sortFunc}></button>)}
                   <div
                     className="resizer"
                     onMouseDown={(e) => onResize(e, index)}

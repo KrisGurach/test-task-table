@@ -12,6 +12,8 @@ const App = () => {
 
   const [users, setUsers] = useState(usersToSet);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [isSortDown, setIsSortDown] = useState(false);
+
   const hasFetchedData = useRef(false);
   const inputRef = useRef(null);
 
@@ -115,6 +117,8 @@ const App = () => {
 
     setUsers(sortedUsers);
     setSortConditions({ ...sortConditions, [field]: newType });
+
+    setIsSortDown(!isSortDown);
   };
 
   return (
@@ -130,6 +134,7 @@ const App = () => {
       <UserTable 
         users={users}
         sortBy={sortBy}
+        isSortDown={isSortDown}
       />
     </div>
   );
