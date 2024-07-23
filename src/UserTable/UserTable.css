@@ -40,7 +40,7 @@
 
 .button-sort {
   margin-left: 10px;
-  background-image: url(./sort-icon-down.png);
+  background-image: url(../images/sort-icon-down.png);
   background-color: transparent;
   background-size: cover; 
   background-position: center; 

@@ -1,7 +1,7 @@
 import "./App.css";
 import React, { useEffect, useRef, useState } from "react";
-import UserTable from "./UserTable";
-import api from "./Api";
+import UserTable from "../UserTable/UserTable";
+import api from "../api/Api";
 
 const App = () => {
   const allUsers = JSON.parse(localStorage.getItem("allUsers"));
